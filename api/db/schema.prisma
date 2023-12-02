@@ -10,9 +10,73 @@ generator client {
 
 // Define your own datamodels here and run `yarn redwood prisma migrate dev`
 // to create migrations for them and apply to your dev DB.
-// TODO: Please remove the following example:
-model UserExample {
-  id    Int     @id @default(autoincrement())
-  email String  @unique
-  name  String?
+model User {
+  id        Int      @id @default(autoincrement())
+  email     String   @unique
+  password  String
+  firstName String
+  lastName  String
+  avatar    String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  role      Role     @default(USER)
+}
+
+enum Role {
+  ADMIN
+  USER
+}
+
+enum UserStatus {
+  INVITED
+  DECLINED
+  ACCEPTED
+}
+
+model Status {
+  id      String     @id()
+  eventId String
+  userId  Int
+  status  UserStatus @default(INVITED)
+}
+
+model Wishlist {
+  id              Int      @id @default(autoincrement())
+  name            String
+  url             String
+  userId          User     @relation(fields: [userId], references: [id])
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+  order           Int
+  eventId         Event    @relation(fields: [id], references: [id])
+  siteImage       String
+  siteTitle       String
+  siteDescription String
+}
+
+model Event {
+  id           Int      @id @default(autoincrement())
+  name         String
+  date         DateTime
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+  sendReminder Boolean
+}
+
+model Pairings {
+  id        Int      @id
+  eventId   Event    @relation(fields: [id], references: [id])
+  santaId   Int
+  personId  Int
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model ThankYou {
+  id        Int      @id @default(autoincrement())
+  eventId   Event    @relation(fields: [id], references: [id])
+  userId    User     @relation(fields: [userId], references: [id])
+  toUserId  User     @relation(fields: [userId], references: [id])
+  message   String
+  createdAt DateTime @default(now())
 }
